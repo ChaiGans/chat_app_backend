@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String         @id @default(uuid())
+  username               String
+  email                  String         @unique
+  password               String
+  conversationsAsUserOne Conversation[] @relation("UserOneConversations")
+  conversationsAsUserTwo Conversation[] @relation("UserTwoConversations")
+  friendsAsUserOne       Friend[]       @relation("FriendsOne")
+  friendsAsUserTwo       Friend[]       @relation("FriendsTwo")
+  Message                Message[]
+}
+
+model Conversation {
+  c_id     String    @id @default(uuid())
+  user_one String
+  user_two String
+  messages Message[]
+  UserOne  User      @relation("UserOneConversations", fields: [user_one], references: [id])
+  UserTwo  User      @relation("UserTwoConversations", fields: [user_two], references: [id])
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  timestamp      DateTime      @default(now())
+  status         MessageStatus
+  Conversation   Conversation  @relation(fields: [conversationId], references: [c_id])
+  Sender         User          @relation(fields: [senderId], references: [id])
+}
+
+model Friend {
+  user_one  String
+  user_two  String
+  createdAt DateTime @default(now())
+  UserOne   User     @relation("FriendsOne", fields: [user_one], references: [id])
+  UserTwo   User     @relation("FriendsTwo", fields: [user_two], references: [id])
+
+  @@id([user_one, user_two])
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
