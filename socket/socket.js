@@ -28,6 +28,10 @@ const initializeSocketIO = (server) => {
       console.log("Current user online : ", users);
     });
 
+    socket.on("check-user-online", (username) => {  
+      io.emit("get-user-status", { status: username in users });
+    });
+
     socket.on("send_message", async ({ message, fromUserId, toUsername }) => {
       // console.log("tes");
       // console.log(fromUserId);
