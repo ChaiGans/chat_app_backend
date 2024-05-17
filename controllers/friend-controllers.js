@@ -24,8 +24,8 @@ export const addFriend = async (req, res) => {
 
         const newFriend = await prisma.friend.create({
             data: {
-                user_one: senderId,
-                user_two: receiver.id, // Use the ID of the receiver
+                user_one: receiver.id,
+                user_two: senderId, // Use the ID of the receiver
             },
         });
 
