@@ -106,3 +106,15 @@ app.get("/", authenticateToken, (req, res) => {
   }
   res.status(200).send(`Hello ${req.user.username}`);
 });
+
+app.get("/protected-route", authenticateToken, (req, res) => {
+  // If the request reaches this point, it means the user is authenticated
+  // You can send back any data that indicates successful authentication
+  res.status(200).send("Authenticated");
+});
+
+app.post("/logout", (req, res) => {
+  // Clear the token cookie
+  res.clearCookie("token");
+  res.status(200).send("Logout successful");
+});
