@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const getUser = async (req, res) => {
+export const getUsersForSidebar = async (req, res) => {
     try {
         const loggedInUser = req.user?.id;
 
@@ -20,7 +20,7 @@ export const getUser = async (req, res) => {
             }
         })
 
-        res.status(201).json({ users : filteredUsers });
+        res.status(201).json(filteredUsers);
 
     } catch (error) {
         console.error("Error in getUser controller: ", error.message);

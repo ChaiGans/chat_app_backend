@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { validateBodyFields } from "../middleware/error_handling.js";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import generateAccessToken from "../utils/generate-token.js";
@@ -72,7 +71,7 @@ export const loginHandler = async (req, res) => {
 export const logoutHandler = (req, res) => {
     try {
       res.cookie('token', '', { maxAge : 0})
-      res.status(200).send("Logout successful");
+      res.status(200).json({ message : "Log out Successful" })
     } catch (error) {
       console.log("Error Logout Controller: ", error.message)
       restart.status(500).json({ message: "Internal Server Error" });
