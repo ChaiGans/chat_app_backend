@@ -70,8 +70,6 @@ export const getMessage = async (req, res) => {
             }
         });
 
-        console.log(conversation)
-
         if (!conversation) {
             return res.status(404).json({ error: "Conversation not found" });
         }
