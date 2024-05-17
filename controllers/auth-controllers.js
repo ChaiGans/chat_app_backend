@@ -23,16 +23,17 @@ export const registerHandler =  async (req, res) => {
         const hashedPassword = await hashPassword(password);
         const newUser = await prisma.user.create({
         data: { username, password: hashedPassword, email },
-      });
+        });
+        res.status(200).json({ message: "Register successful" });
 
-      if (newUser) {
-        generateAccessToken(newUser.id, res);
-        res.status(200).json({
-          id : newUser.id,
-          username : newUser.username,
-          email : newUser.email
-        })
-      }
+      // if (newUser) {
+      //   generateAccessToken(newUser.id, res);
+      //   res.status(200).json({
+      //     id : newUser.id,
+      //     username : newUser.username,
+      //     email : newUser.email
+      //   })
+      // }
       })
     } catch (error) {
       console.error("Error during registration:", error);
@@ -69,9 +70,12 @@ export const loginHandler = async (req, res) => {
 }
 
 export const logoutHandler = (req, res) => {
-    try {
-      res.cookie('token', '', { maxAge : 0})
-      res.status(200).json({ message : "Log out Successful" })
+  try {
+        res.clearCookie('jwt');
+        // Respond with a success message
+        res.status(200).json({ message: "Logout successful" });
+      // res.cookie('token', '', { maxAge : 0})
+      // res.status(200).json({ message : "Log out Successful" })
     } catch (error) {
       console.log("Error Logout Controller: ", error.message)
       restart.status(500).json({ message: "Internal Server Error" });

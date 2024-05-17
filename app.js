@@ -10,6 +10,7 @@ import userRoutes from "./routes/user-routes.js";
 import friendRoutes from "./routes/friend-routes.js";
 
 import { app, server } from "./socket/socket.js";
+import protectRoute from "./middleware/protect-routes.js";
 
 dotenv.config();
 
@@ -50,4 +51,9 @@ app.get("/", authenticateToken, (req, res) => {
     res.redirect("http://127.0.0.1:5500/login.html");
   }
   res.status(200).send(`Hello ${req.user.username}`);
+}); */
+
+app.get('/api/protected-route', protectRoute, (req, res) => {
+    // This route is protected and only accessible to authenticated users
+    res.status(200).send("Authenticated");
 });
