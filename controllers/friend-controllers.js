@@ -7,8 +7,6 @@ export const addFriend = async (req, res) => {
         const { username: receiverUsername } = req.params; // Change parameter name to 'username'
         const senderId = req.user?.id;
 
-        console.log(receiverUsername, senderId);
-
         if (!senderId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
@@ -20,6 +18,19 @@ export const addFriend = async (req, res) => {
 
         if (!receiver) {
             return res.status(404).json({ error: "Receiver not found" });
+        }
+
+        const existingFriendship = await prisma.friend.findFirst({
+            where: {
+                OR: [
+                    { user_one: senderId, user_two: receiver.id },
+                    { user_one: receiver.id, user_two: senderId },
+                ],
+            },
+        });
+
+        if (existingFriendship) {
+            return res.status(400).json({ error: "Friendship already exists" });
         }
 
         const newFriend = await prisma.friend.create({
@@ -69,7 +80,7 @@ export const getFriends = async (req, res) => {
     try {
         const userId = req.user?.id;
 
-        console.log(userId);
+        // console.log(userId);
 
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
@@ -115,6 +126,7 @@ export const getFriends = async (req, res) => {
 
                 // Determine the username for the friend based on the user IDs
                 const username = friend.user_one === userId ? usernameTwo : usernameOne;
+
 
                 return {
                     username,

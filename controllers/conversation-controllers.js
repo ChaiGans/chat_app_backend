@@ -7,8 +7,6 @@ export const sendMessage = async (req, res) => {
         const { message } = req.body;
         const { id: receiverId } = req.params; 
         const senderId = req.user?.id;
-        console.log(receiverId)
-        console.log(senderId)
 
         if (!senderId) {
             return res.status(401).json({ error: "Unauthorized" });
