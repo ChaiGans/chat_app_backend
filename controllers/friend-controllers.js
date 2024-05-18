@@ -67,7 +67,7 @@ export const addFriend = async (req, res) => {
 
 export const getFriends = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.params?.id;
 
     console.log(userId);
 
