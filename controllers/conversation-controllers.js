@@ -52,7 +52,7 @@ export const getMessage = async (req, res) => {
             return res.status(400).json({ error: "Invalid ID Point" });
         }
 
-        const conversation = await prisma.conversation.findMany({
+        let conversation = await prisma.conversation.findFirst({
             where: {
                 OR: [
                     {
@@ -71,10 +71,16 @@ export const getMessage = async (req, res) => {
         });
 
         if (!conversation) {
-            return res.status(404).json({ error: "Conversation not found" });
+            // If conversation not found, create a new empty conversation
+            conversation = await prisma.conversation.create({
+                data: {
+                    user_one: senderId,
+                    user_two: userToChatId
+                }
+            });
         }
 
-        const converId = conversation.id;
+        const converId = conversation.c_id;
 
         const messages = await prisma.message.findMany({
             where: {

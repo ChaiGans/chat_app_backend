@@ -5,7 +5,7 @@ import { addFriend, getFriends } from "../controllers/friend-controllers.js";
 
 const router = express.Router();
 
-router.get("/", protectRoute, getFriends);
+router.get("/:id", protectRoute, getFriends);
 router.post("/:username", protectRoute, addFriend);
 
-export default router
+export default router;
