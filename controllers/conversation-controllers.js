@@ -54,7 +54,7 @@ export const getMessage = async (req, res) => {
             return res.status(400).json({ error: "Invalid ID Point" });
         }
 
-        const conversation = await prisma.conversation.findMany({
+        let conversation = await prisma.conversation.findFirst({
             where: {
                 OR: [
                     {
@@ -72,13 +72,17 @@ export const getMessage = async (req, res) => {
             }
         });
 
-        console.log(conversation)
-
         if (!conversation) {
-            return res.status(404).json({ error: "Conversation not found" });
+            // If conversation not found, create a new empty conversation
+            conversation = await prisma.conversation.create({
+                data: {
+                    user_one: senderId,
+                    user_two: userToChatId
+                }
+            });
         }
 
-        const converId = conversation.id;
+        const converId = conversation.c_id;
 
         const messages = await prisma.message.findMany({
             where: {
@@ -95,4 +99,59 @@ export const getMessage = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+// export const getMessage = async (req, res) => {
+//     try {
+//         const { id: userToChatId } = req.params;
+//         const senderId = req.user?.id;
+
+//         if (!senderId) {
+//             return res.status(401).json({ error: "Unauthorized" });
+//         }
+
+//         if (!userToChatId) {
+//             return res.status(400).json({ error: "Invalid ID Point" });
+//         }
+
+//         const conversation = await prisma.conversation.findMany({
+//             where: {
+//                 OR: [
+//                     {
+//                         user_one: senderId,
+//                         user_two: userToChatId
+//                     },
+//                     {
+//                         user_one: userToChatId,
+//                         user_two: senderId
+//                     }
+//                 ]
+//             },
+//             select: {
+//                 c_id: true
+//             }
+//         });
+
+//         console.log(conversation)
+
+//         if (!conversation) {
+//             return res.status(404).json({ error: "Conversation not found" });
+//         }
+
+//         const converId = conversation.id;
+
+//         const messages = await prisma.message.findMany({
+//             where: {
+//                 conversationId: converId
+//             },
+//             orderBy: {
+//                 timestamp: 'asc'
+//             }
+//         });
+
+//         res.status(200).json(messages);
+//     } catch (error) {
+//         console.log("Error in getMessage controller: ", error.message);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
 
